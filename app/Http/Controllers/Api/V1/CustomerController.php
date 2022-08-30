@@ -7,59 +7,42 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CustomerCollection;
 use App\Http\Resources\V1\CustomerResource;
+use App\Services\V1\CustomerFilter;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(CustomerFilter $filter)
     {
-        return new CustomerCollection(Customer::paginate());
+        $queryItems = $filter->transform(request());
+
+        $includeInvoices = request()->query('includeInvoices');
+
+        $customers = Customer::where($queryItems);
+
+        if($includeInvoices)
+            $customers->with('invoices');
+
+        return new CustomerCollection($customers->paginate());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function show(Customer $customer)
     {
+        if(request()->query('includeInvoices'))
+            $customer->loadmissing('invoices');
+
         return new CustomerResource($customer);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Customer $customer)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Customer $customer)
     {
         //
