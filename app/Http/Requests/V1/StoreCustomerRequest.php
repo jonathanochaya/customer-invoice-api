@@ -14,7 +14,7 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->hasUser() && $this->user()->tokenCan('create');
     }
 
     /**

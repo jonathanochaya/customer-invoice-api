@@ -212,4 +212,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'api_username' => env('API_DEFAULT_USERNAME'),
+    'api_email' => env('API_DEFAULT_EMAIL'),
+    'api_password' => env('API_DEFAULT_PASSWORD'),
 ];
